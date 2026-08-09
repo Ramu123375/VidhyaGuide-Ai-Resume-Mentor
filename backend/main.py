@@ -121,29 +121,40 @@ def init_db():
         (demo_email,)
     ).fetchone()
 
-    if not existing_demo:
+    demo_password = hash_password("demo123")
 
-        demo_password = hash_password(
-            "demo123"
-        )
-
+    if existing_demo:
         db.execute(
-            """
-            INSERT INTO users
-            (
-                name,
-                email,
-                password
-            )
-            VALUES (?, ?, ?)
-            """,
-            (
-                "Demo User",
-                demo_email,
-                demo_password
-            )
+        """
+        UPDATE users
+        SET
+            name = ?,
+            password = ?
+        WHERE email = ?
+        """,
+        (
+            "Demo User",
+            demo_password,
+            demo_email
         )
-
+        )
+    else:
+        db.execute(
+        """
+        INSERT INTO users
+        (
+            name,
+            email,
+            password
+        )
+        VALUES (?, ?, ?)
+        """,
+        (
+            "Demo User",
+            demo_email,
+            demo_password
+        )
+        )
     db.commit()
 
     db.close()
