@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 // API CONFIGURATION
 // ======================================================
 
-const API_URL = "http://127.0.0.1:8000";
+const API_URL = "https://vidhyaguide-ai-resume-mentor.onrender.com";
 
 
 // ======================================================

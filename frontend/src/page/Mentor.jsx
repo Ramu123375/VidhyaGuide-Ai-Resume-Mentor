@@ -37,7 +37,7 @@ function Mentor() {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8000/mentor",
+        "https://vidhyaguide-ai-resume-mentor.onrender.com/mentor",
         {
           method: "POST",
 
