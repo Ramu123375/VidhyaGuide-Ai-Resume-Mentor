@@ -13,8 +13,8 @@ import hashlib
 import os
 import uuid
 
-from backend.ats import ats_analysis
-from backend.ai import generate_career_guidance , generate_mentor_response
+from ats import ats_analysis
+from ai import generate_career_guidance , generate_mentor_response
 
 
 # =========================================================
