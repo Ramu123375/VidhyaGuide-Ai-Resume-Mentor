@@ -14,7 +14,7 @@ import os
 import uuid
 
 from ats import ats_analysis
-from ai import generate_career_guidance , generate_mentor_response
+from ai import generate_career_guidance, generate_mentor_response
 
 
 # =========================================================
@@ -67,9 +67,28 @@ def get_db():
     return connection
 
 
+# =========================================================
+# PASSWORD HASH
+# =========================================================
+
+def hash_password(password):
+
+    return hashlib.sha256(
+        password.encode("utf-8")
+    ).hexdigest()
+
+
+# =========================================================
+# DATABASE INITIALIZATION
+# =========================================================
+
 def init_db():
 
     db = get_db()
+
+    # -----------------------------------------------------
+    # CREATE USERS TABLE
+    # -----------------------------------------------------
 
     db.execute(
         """
@@ -87,11 +106,50 @@ def init_db():
         """
     )
 
+    # -----------------------------------------------------
+    # CREATE DEMO ACCOUNT
+    # -----------------------------------------------------
+
+    demo_email = "demo@vidhyaguide.ai"
+
+    existing_demo = db.execute(
+        """
+        SELECT id
+        FROM users
+        WHERE email = ?
+        """,
+        (demo_email,)
+    ).fetchone()
+
+    if not existing_demo:
+
+        demo_password = hash_password(
+            "demo123"
+        )
+
+        db.execute(
+            """
+            INSERT INTO users
+            (
+                name,
+                email,
+                password
+            )
+            VALUES (?, ?, ?)
+            """,
+            (
+                "Demo User",
+                demo_email,
+                demo_password
+            )
+        )
+
     db.commit()
 
     db.close()
 
 
+# Initialize database
 init_db()
 
 
@@ -105,17 +163,6 @@ os.makedirs(
     UPLOAD_FOLDER,
     exist_ok=True
 )
-
-
-# =========================================================
-# PASSWORD HASH
-# =========================================================
-
-def hash_password(password):
-
-    return hashlib.sha256(
-        password.encode("utf-8")
-    ).hexdigest()
 
 
 # =========================================================
@@ -136,6 +183,11 @@ class SignupRequest(BaseModel):
     email: str
 
     password: str
+
+
+class MentorRequest(BaseModel):
+
+    message: str
 
 
 # =========================================================
@@ -187,6 +239,10 @@ def signup(
     password = data.password
 
 
+    # -----------------------------------------------------
+    # VALIDATION
+    # -----------------------------------------------------
+
     if not name:
 
         raise HTTPException(
@@ -211,6 +267,10 @@ def signup(
         )
 
 
+    # -----------------------------------------------------
+    # DATABASE
+    # -----------------------------------------------------
+
     db = get_db()
 
 
@@ -220,9 +280,7 @@ def signup(
         FROM users
         WHERE email = ?
         """,
-
         (email,)
-
     ).fetchone()
 
 
@@ -236,10 +294,18 @@ def signup(
         )
 
 
+    # -----------------------------------------------------
+    # HASH PASSWORD
+    # -----------------------------------------------------
+
     hashed_password = hash_password(
         password
     )
 
+
+    # -----------------------------------------------------
+    # INSERT USER
+    # -----------------------------------------------------
 
     db.execute(
         """
@@ -251,7 +317,6 @@ def signup(
         )
         VALUES (?, ?, ?)
         """,
-
         (
             name,
             email,
@@ -263,15 +328,17 @@ def signup(
     db.commit()
 
 
+    # -----------------------------------------------------
+    # GET CREATED USER
+    # -----------------------------------------------------
+
     user = db.execute(
         """
         SELECT id, name, email
         FROM users
         WHERE email = ?
         """,
-
         (email,)
-
     ).fetchone()
 
 
@@ -316,10 +383,18 @@ def login(
     password = data.password
 
 
+    # -----------------------------------------------------
+    # HASH PASSWORD
+    # -----------------------------------------------------
+
     hashed_password = hash_password(
         password
     )
 
+
+    # -----------------------------------------------------
+    # DATABASE
+    # -----------------------------------------------------
 
     db = get_db()
 
@@ -331,17 +406,19 @@ def login(
         WHERE email = ?
         AND password = ?
         """,
-
         (
             email,
             hashed_password
         )
-
     ).fetchone()
 
 
     db.close()
 
+
+    # -----------------------------------------------------
+    # INVALID LOGIN
+    # -----------------------------------------------------
 
     if not user:
 
@@ -350,6 +427,10 @@ def login(
             detail="Invalid email or password"
         )
 
+
+    # -----------------------------------------------------
+    # SUCCESS
+    # -----------------------------------------------------
 
     return {
 
@@ -393,9 +474,7 @@ def get_user(
         FROM users
         WHERE id = ?
         """,
-
         (user_id,)
-
     ).fetchone()
 
 
@@ -644,14 +723,11 @@ def api_status():
         "running"
 
     }
+
+
 # =========================================================
 # VIDYA AI MENTOR
 # =========================================================
-
-class MentorRequest(BaseModel):
-
-    message: str
-
 
 @app.post("/mentor")
 def mentor(
@@ -660,6 +736,11 @@ def mentor(
 
     message = data.message.strip()
 
+
+    # -----------------------------------------------------
+    # VALIDATION
+    # -----------------------------------------------------
+
     if not message:
 
         raise HTTPException(
@@ -667,19 +748,28 @@ def mentor(
             detail="Message is required"
         )
 
+
+    # -----------------------------------------------------
+    # GEMINI RESPONSE
+    # -----------------------------------------------------
+
     try:
 
         response = generate_mentor_response(
             message
         )
 
+
         return {
 
-            "success": True,
+            "success":
+            True,
 
-            "response": response
+            "response":
+            response
 
         }
+
 
     except Exception as error:
 
