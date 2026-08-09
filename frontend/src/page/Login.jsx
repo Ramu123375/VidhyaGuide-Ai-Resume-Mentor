@@ -3,7 +3,6 @@ import { useState } from "react";
 const API_URL = "https://vidhyaguide-ai-resume-mentor.onrender.com";
 
 function Login() {
-
   const [isSignup, setIsSignup] = useState(false);
 
   const [name, setName] = useState("");
@@ -14,9 +13,7 @@ function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-
   const handleSubmit = async (event) => {
-
     event.preventDefault();
 
     setError("");
@@ -24,51 +21,40 @@ function Login() {
     setLoading(true);
 
     try {
-
       const endpoint = isSignup
         ? `${API_URL}/signup`
         : `${API_URL}/login`;
-
 
       const body = isSignup
         ? {
             name,
             email,
-            password
+            password,
           }
         : {
             email,
-            password
+            password,
           };
 
-
       const response = await fetch(endpoint, {
-
         method: "POST",
 
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
 
-        body: JSON.stringify(body)
-
+        body: JSON.stringify(body),
       });
-
 
       const data = await response.json();
 
-
       if (!response.ok) {
-
         throw new Error(
           data.detail || "Something went wrong"
         );
-
       }
 
-
       if (isSignup) {
-
         setSuccess(
           "Account created successfully. You can now sign in."
         );
@@ -77,51 +63,35 @@ function Login() {
 
         setName("");
         setPassword("");
-
       } else {
-
         localStorage.setItem(
-            "vidya_user",
-            JSON.stringify(data.user)
+          "vidya_user",
+          JSON.stringify(data.user)
         );
+
         setSuccess("Login successful!");
+
         setTimeout(() => {
-            window.location.reload();
+          window.location.reload();
         }, 500);
-        /*
-          Dashboard connection will be added next.
-        */
-
       }
-
     } catch (error) {
-
       setError(
-        error.message ||
-        "Unable to connect to server"
+        error.message || "Unable to connect to server"
       );
-
     } finally {
-
       setLoading(false);
-
     }
-
   };
 
-
   const switchMode = () => {
-
     setIsSignup(!isSignup);
 
     setError("");
     setSuccess("");
-
   };
 
-
   return (
-
     <div className="login-page">
 
       {/* =================================
@@ -134,31 +104,24 @@ function Login() {
           VG
         </div>
 
-
         <div className="brand-content">
 
           <p className="eyebrow">
             AI CAREER PLATFORM
           </p>
 
-
           <h1>
             Build your career
             <span> with intelligence.</span>
           </h1>
 
-
           <p className="brand-description">
-
             Analyze your resume, discover the right
             career path, prepare for companies and get
             personalized guidance from your AI career mentor.
-
           </p>
 
-
           <div className="feature-list">
-
 
             <div className="feature-item">
 
@@ -167,7 +130,6 @@ function Login() {
               </div>
 
               <div>
-
                 <strong>
                   AI Resume Analysis
                 </strong>
@@ -175,11 +137,9 @@ function Login() {
                 <p>
                   Find mistakes and improve your ATS score.
                 </p>
-
               </div>
 
             </div>
-
 
             <div className="feature-item">
 
@@ -188,7 +148,6 @@ function Login() {
               </div>
 
               <div>
-
                 <strong>
                   Personal Career Roadmap
                 </strong>
@@ -196,11 +155,9 @@ function Login() {
                 <p>
                   Discover skills and roles matched to you.
                 </p>
-
               </div>
 
             </div>
-
 
             <div className="feature-item">
 
@@ -209,7 +166,6 @@ function Login() {
               </div>
 
               <div>
-
                 <strong>
                   Company Preparation
                 </strong>
@@ -217,16 +173,13 @@ function Login() {
                 <p>
                   Prepare smarter for your target companies.
                 </p>
-
               </div>
 
             </div>
 
-
           </div>
 
         </div>
-
 
         <div className="brand-footer">
           © 2026 VidyaGuide AI
@@ -243,38 +196,28 @@ function Login() {
 
         <div className="login-card">
 
-
           <div className="mobile-logo">
             VG
           </div>
 
-
           <div className="login-header">
 
             <p className="login-small-title">
-
               {isSignup
                 ? "GET STARTED"
                 : "WELCOME BACK"}
-
             </p>
 
-
             <h2>
-
               {isSignup
                 ? "Create your account"
                 : "Sign in to VidyaGuide"}
-
             </h2>
 
-
             <p>
-
               {isSignup
                 ? "Start your AI-powered career journey."
                 : "Continue building your career with AI."}
-
             </p>
 
           </div>
@@ -285,11 +228,9 @@ function Login() {
           ================================= */}
 
           {error && (
-
             <div className="message-error">
               {error}
             </div>
-
           )}
 
 
@@ -298,21 +239,17 @@ function Login() {
           ================================= */}
 
           {success && (
-
             <div className="message-success">
               {success}
             </div>
-
           )}
 
 
           <form onSubmit={handleSubmit}>
 
-
             {/* NAME */}
 
             {isSignup && (
-
               <div className="input-group">
 
                 <label htmlFor="name">
@@ -331,7 +268,6 @@ function Login() {
                 />
 
               </div>
-
             )}
 
 
@@ -367,20 +303,16 @@ function Login() {
                   Password
                 </label>
 
-
                 {!isSignup && (
-
                   <button
                     type="button"
                     className="forgot-button"
                   >
                     Forgot password?
                   </button>
-
                 )}
 
               </div>
-
 
               <input
                 id="password"
@@ -421,7 +353,6 @@ function Login() {
 
             </button>
 
-
           </form>
 
 
@@ -430,29 +361,22 @@ function Login() {
           ================================= */}
 
           {!isSignup && (
-
             <>
-
               <div className="divider">
                 <span>or</span>
               </div>
-
 
               <button
                 type="button"
                 className="demo-button"
                 onClick={() => {
-
                   setEmail("demo@vidhyaguide.ai");
                   setPassword("demo123");
-
                 }}
               >
                 Use Demo Credentials
               </button>
-
             </>
-
           )}
 
 
@@ -465,7 +389,6 @@ function Login() {
             {isSignup
               ? "Already have an account?"
               : "Don't have an account?"}
-
 
             <button
               type="button"
@@ -481,15 +404,12 @@ function Login() {
 
           </p>
 
-
         </div>
 
       </section>
 
     </div>
-
   );
-
 }
 
 export default Login;
